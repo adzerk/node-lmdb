@@ -22,6 +22,8 @@
 // THE SOFTWARE.
 
 #include "node-lmdb.h"
+#include "kevel-patch.h"
+
 
 using namespace v8;
 using namespace node;
@@ -379,7 +381,7 @@ NAN_METHOD(EnvWrap::open) {
     setFlagFromValue(&flags, MDB_NOSUBDIR, "noSubdir", false, options);
     setFlagFromValue(&flags, MDB_RDONLY, "readOnly", false, options);
     setFlagFromValue(&flags, MDB_WRITEMAP, "useWritemap", false, options);
-    setFlagFromValue(&flags, MDB_PREVSNAPSHOT, "usePreviousSnapshot", false, options);
+    // setFlagFromValue(&flags, MDB_PREVSNAPSHOT, "usePreviousSnapshot", false, options);
     setFlagFromValue(&flags, MDB_NOMEMINIT , "noMemInit", false, options);
     setFlagFromValue(&flags, MDB_NORDAHEAD , "noReadAhead", false, options);
     setFlagFromValue(&flags, MDB_NOMETASYNC, "noMetaSync", false, options);
