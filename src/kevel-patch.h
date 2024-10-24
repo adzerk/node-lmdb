@@ -1,6 +1,6 @@
-#ifndef KEVEL-PATCH_H_
-#define KEVEL-PATCH_H_
+#ifndef KEVEL_PATCH_H
+#define KEVEL_PATCH_H
 
 typedef uint64_t	mdb_size_t;
 
-#endif // KEVEL-PATCH_H_
+#endif // KEVEL_PATCH_H
