@@ -1,6 +1,6 @@
 const { pack, unpack } = require('msgpackr')
-const { mkdirSync }    = require('fs')
-const { Cursor, Env }  = require('node-gyp-build')(__dirname)
+const { mkdirSync } = require('fs')
+const { Cursor, Env } = require('node-gyp-build')(__dirname)
 
 function asBinary(buffer) {
   return {
@@ -61,9 +61,17 @@ class Iterator {
  * adset-consumer uses in its current form.
  */
 class Store {
-  constructor({ create = false, name, path, mapSize }) {
+  // TODO: maybe refactor to split env/dbi params
+  // TODO: support additional dbis
+  constructor({
+    create = false,
+    mapSize,
+    name,
+    noReadAhead = false,
+    path
+  }) {
     this.env = new Env()
-    this.env.open({ path, mapSize })
+    this.env.open({ path, mapSize, noReadAhead })
     this.dbi = this.env.openDbi({ name, create, keyIsBuffer: true })
     this.txn = null
   }
@@ -164,8 +172,8 @@ class Store {
     return results
   }
 
-  backup(dest, compact=false) {
-    mkdirSync(dest, { recursive: true });
+  backup(dest, compact = false) {
+    mkdirSync(dest, { recursive: true })
     return new Promise((resolve, reject) => this.env.copy(dest, compact, (error) => {
       if (error) {
         console.error(`error attempting copy`, error)
