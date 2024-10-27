@@ -131,4 +131,48 @@ describe('Store class', function () {
       assert.deepEqual(result, 2)
     })
   })
+
+  describe('getRange method', function () {
+    it('should iterate over key-value pairs that match prefix', function () {
+      const key1 = 'user1'
+      const key2 = 'user2'
+      const key3 = 'bot1'
+      const value1 = { name: 'Alice', age: 25 }
+      const value2 = { name: 'Bob', age: 30 }
+      const value3 = { name: 'Kryten' }
+
+      store.put(key1, value1)
+      store.put(key2, value2)
+      store.put(key3, value3)
+
+      const results = []
+
+      for (const { key, value } of store.getRange({ prefix: 'user' })) {
+        results.push({ key, value })
+      }
+
+      assert.deepEqual(results, [
+        { key: 'user1', value: value1 },
+        { key: 'user2', value: value2 },
+      ])
+    })
+
+    it('should return empty array for non-matching prefix', function () {
+      const key1 = 'user1'
+      const key2 = 'user2'
+      const value1 = { name: 'Alice', age: 25 }
+      const value2 = { name: 'Bob', age: 30 }
+
+      store.put(key1, value1)
+      store.put(key2, value2)
+
+      const results = []
+
+      for (const { key, value } of store.getRange({ prefix: 'nomatch' })) {
+        results.push({ key, value })
+      }
+
+      assert.deepEqual(results, [])
+    })
+  })
 })
