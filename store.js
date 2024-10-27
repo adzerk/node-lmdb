@@ -182,7 +182,7 @@ class Store {
     return new Iterator(this.env, this.dbi, { ...options, values: false })
   }
 
-  getMany(keys) {
+  getMany(keys, callback) {
     // TODO: optimise this: use zero-copy/unsafe buffers
     let results = new Array(keys.length)
     this.transact(() => {
@@ -192,7 +192,7 @@ class Store {
         results[i] = (valueBuffer != null) ? unpack(valueBuffer) : null
       }
     }, true)
-    return results
+    return callback ? callback(null, results) : results
   }
 
   backup(dest, compact = false) {
