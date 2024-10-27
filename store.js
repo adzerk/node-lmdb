@@ -61,6 +61,8 @@ class Iterator {
  * adset-consumer uses in its current form.
  */
 class Store {
+  // TODO: add in support for a persistent readonly transaction for the lifetime
+  // of the Store instance - Engines will need this
   // TODO: maybe refactor to split env/dbi params
   // TODO: support additional dbis
   constructor({
@@ -182,6 +184,12 @@ class Store {
         resolve()
       }
     }))
+  }
+
+  getCount() {
+    return this.transact(() => {
+      return this.dbi.stat(this.txn)?.entryCount
+    })
   }
 
   close() {
