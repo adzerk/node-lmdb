@@ -58,9 +58,10 @@ describe('Store class', function () {
       const value = { name: 'Alice', age: 25 }
 
       store.put(key, value)
-      store.del(key)
+      const success = store.del(key)
       const result = store.get(key)
 
+      assert.isTrue(success)
       assert.isNull(result)
     })
   })

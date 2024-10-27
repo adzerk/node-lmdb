@@ -108,11 +108,14 @@ class Store {
   }
 
   del(key) {
-    this.transact(() => {
+    return this.transact(() => {
       try {
         const keyBuffer = Buffer.from(key, 'utf8')
         if (this.txn.getBinary(this.dbi, keyBuffer) != null) {
           this.txn.del(this.dbi, keyBuffer)
+          return true
+        } else {
+          return false
         }
       } catch (error) {
         console.error('Error deleting value:', error)
