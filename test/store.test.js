@@ -115,4 +115,19 @@ describe('Store class', function () {
       ])
     })
   })
+
+  describe('getCount method', function () {
+    it('should correctly report the number of keys', function () {
+      const key1 = 'user1'
+      const key2 = 'user2'
+      const value1 = { name: 'Alice', age: 25 }
+      const value2 = { name: 'Bob', age: 30 }
+
+      store.put(key1, value1)
+      store.put(key2, value2)
+
+      const result = store.getCount()
+      assert.deepEqual(result, 2)
+    })
+  })
 })
