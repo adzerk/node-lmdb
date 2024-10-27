@@ -8,12 +8,27 @@ function asBinary(buffer) {
   }
 }
 
+function startsWithBuffer(buffer, prefix) {
+  if (buffer.length < prefix.length) {
+    return false
+  }
+
+  for (let i = 0; i < prefix.length; i++) {
+    if (buffer[i] !== prefix[i]) {
+      return false
+    }
+  }
+
+  return true
+}
+
 
 class Iterator {
-  constructor(env, dbi, opts = {}) {
+  constructor(env, dbi, options = {}) {
     this.txn = env.beginTxn({ readOnly: true })
     this.cursor = new Cursor(this.txn, dbi)
-    this.opts = opts
+    this.options = options
+    this.prefixBuffer = options.prefix ? Buffer.from(options.prefix) : null
   }
 
   close() {
@@ -23,12 +38,12 @@ class Iterator {
 
   [Symbol.iterator]() {
     const self = this
-    const { keys = true, values = true } = this.opts
-    let key = this.cursor.goToFirst()
+    const { keys = true, values = true } = this.options
+    let key = this.prefixBuffer ? this.cursor.goToRange(this.prefixBuffer) : this.cursor.goToFirst()
 
     return {
       next() {
-        if (key !== null) {
+        if (key !== null && (!self.prefixBuffer || startsWithBuffer(key, self.prefixBuffer))) {
           let value
           if (keys && values) {
             value = {
@@ -156,12 +171,15 @@ class Store {
   }
 
   iterate() {
-    // TODO: Expand this into a more general getRange() that takes start, end, etc
     return new Iterator(this.env, this.dbi)
   }
 
-  getKeys() {
-    return new Iterator(this.env, this.dbi, { values: false })
+  getRange(options = {}) {
+    return new Iterator(this.env, this.dbi, options)
+  }
+
+  getKeys(options = {}) {
+    return new Iterator(this.env, this.dbi, { ...options, values: false })
   }
 
   getMany(keys) {
