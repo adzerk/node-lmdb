@@ -155,11 +155,9 @@ class Store {
       const result = f()
       if (ownTxn) {
         if (readonly) {
-          console.log('aborting txn')
           this.txn.abort()
         }
         else {
-          console.log('committing txn')
           this.txn.commit()
         }
       }
@@ -185,11 +183,9 @@ class Store {
       const result = await f()
       if (ownTxn) {
         if (readonly) {
-          console.log('aborting txn')
           this.txn.abort()
         }
         else {
-          console.log('committing txn')
           this.txn.commit()
         }
       }
