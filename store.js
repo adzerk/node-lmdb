@@ -154,10 +154,14 @@ class Store {
     try {
       const result = f()
       if (ownTxn) {
-        if (readonly)
+        if (readonly) {
+          console.log('aborting txn')
           this.txn.abort()
-        else
+        }
+        else {
+          console.log('committing txn')
           this.txn.commit()
+        }
       }
       return result
     } catch (error) {
@@ -169,6 +173,37 @@ class Store {
         this.txn = null
     }
   }
+
+  async transactAsync(f, readonly = false) {
+    let ownTxn = false
+    if (!this.txn) {
+      this.txn = this.env.beginTxn()
+      ownTxn = true
+    }
+
+    try {
+      const result = await f()
+      if (ownTxn) {
+        if (readonly) {
+          console.log('aborting txn')
+          this.txn.abort()
+        }
+        else {
+          console.log('committing txn')
+          this.txn.commit()
+        }
+      }
+      return result
+    } catch (error) {
+      console.error('Transaction aborted due to an error:', error.message)
+      this.txn.abort()
+      throw error
+    } finally {
+      if (ownTxn)
+        this.txn = null
+    }
+  }
+
 
   iterate() {
     return new Iterator(this.env, this.dbi)
