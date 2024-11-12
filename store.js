@@ -72,7 +72,8 @@ class Iterator {
 /**
  * This class enforces a very specific usage of lmdb. All keys are
  * utf8 encoded buffers and all values are encoded with
- * msgpack. Transaction handling is also intentionally simplified to
+ * msgpack. Only one named dbi is supported. Transaction 
+ * handling is also intentionally simplified to
  * just one current transaction, no nesting. This is the pattern that
  * adset-consumer uses in its current form.
  */
