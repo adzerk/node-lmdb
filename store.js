@@ -3,9 +3,11 @@ const { mkdirSync }         = require('fs')
 const { Cursor, Env }       = require('node-gyp-build')(__dirname)
 const { AsyncLocalStorage } = require('async_hooks')
 
+const BINARY_DATA_KEY = '\x10binary-data\x02'
+
 function asBinary(buffer) {
   return {
-    ['\x10binary-data\x02']: buffer,
+    [BINARY_DATA_KEY]: buffer,
   }
 }
 
@@ -119,8 +121,8 @@ class Store {
     this.transact((txn) => {
       const keyBuffer = Buffer.from(key, 'utf8')
       let valueBuffer
-      if (value && value['\x10binary-data\x02'])
-        valueBuffer = value['\x10binary-data\x02']
+      if (value && value[BINARY_DATA_KEY])
+        valueBuffer = value[BINARY_DATA_KEY]
       else
         valueBuffer = pack(value)
       txn.putBinary(this.dbi, keyBuffer, valueBuffer)
