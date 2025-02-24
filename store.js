@@ -1,9 +1,14 @@
-const { pack, unpack }      = require('msgpackr')
+const { pack, Unpackr } = require('msgpackr')
 const { mkdirSync }         = require('fs')
 const { Cursor, Env }       = require('node-gyp-build')(__dirname)
 const { AsyncLocalStorage } = require('async_hooks')
 
 const BINARY_DATA_KEY = '\x10binary-data\x02'
+
+const unpackr = new Unpackr({
+  useRecords: false,
+  int64AsType: 'auto', // convert msgpack int64s below Number.MAX_SAFE_INTEGER to Number
+})
 
 function asBinary(buffer) {
   return {
@@ -51,12 +56,12 @@ class Iterator {
           if (keys && values) {
             value = {
               key: key.toString('utf8'),
-              value: unpack(self.cursor.getCurrentBinary())
+              value: unpackr.unpack(self.cursor.getCurrentBinary())
             }
           } else if (keys) {
             value = key.toString('utf8')
           } else if (values) {
-            value = unpack(self.cursor.getCurrentBinary())
+            value = unpackr.unpack(self.cursor.getCurrentBinary())
           } else {
             value = null
           }
@@ -138,7 +143,7 @@ class Store {
     return this.transact((txn) => {
       const keyBuffer = Buffer.from(key, 'utf8')
       const value = txn.getBinary(this.dbi, keyBuffer)
-      return value == null ? null : unpack(value)
+      return value == null ? null : unpackr.unpack(value)
     }, true)
   }
 
@@ -253,7 +258,7 @@ class Store {
       for (let i = 0, l = keys.length; i < l; i++) {
         const keyBuffer = Buffer.from(keys[i], 'utf8')
         const valueBuffer = txn.getBinary(this.dbi, keyBuffer)
-        results[i] = (valueBuffer != null) ? unpack(valueBuffer) : null
+        results[i] = (valueBuffer != null) ? unpackr.unpack(valueBuffer) : null
       }
     }, true)
     return callback ? callback(null, results) : results
