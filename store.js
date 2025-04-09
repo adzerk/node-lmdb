@@ -104,10 +104,11 @@ class Store {
     mapSize,
     name,
     noReadAhead = false,
-    path
+    path,
+    readOnly = false,
   }, context) {
     this.env = new Env()
-    this.env.open({ path, mapSize, noReadAhead })
+    this.env.open({ path, mapSize, noReadAhead, readOnly })
     this.dbi = this.env.openDbi({ name, create, keyIsBuffer: true })
 
     if (context) {
