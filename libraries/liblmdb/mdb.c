@@ -8757,6 +8757,9 @@ mdb_page_split(MDB_cursor *mc, MDB_val *newkey, MDB_val *newdata, pgno_t newpgno
 				copy->mp_ptrs[j++] = mp->mp_ptrs[i];
 			}
 
+			/* Threshold number of keys considered "small" */
+			int keythresh = env->me_psize >> 7;
+
 			/* When items are relatively large the split point needs
 			 * to be checked, because being off-by-one will make the
 			 * difference between success or failure in mdb_node_add.
@@ -8772,7 +8775,7 @@ mdb_page_split(MDB_cursor *mc, MDB_val *newkey, MDB_val *newdata, pgno_t newpgno
 			 * the split so the new page is emptier than the old page.
 			 * This yields better packing during sequential inserts.
 			 */
-			if (nkeys < 32 || nsize > pmax/16 || newindx >= nkeys) {
+			if (nkeys < keythresh || nsize > pmax/16 || newindx >= nkeys) {
 				/* Find split point */
 				psize = 0;
 				if (newindx <= split_indx || newindx >= nkeys) {
