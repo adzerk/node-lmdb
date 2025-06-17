@@ -106,9 +106,35 @@ class Store {
     noReadAhead = false,
     path,
     readOnly = false,
+    maxDbs,
+    maxReaders,
+    noSubdir,
+    useWritemap,
+    usePreviousSnapshot,
+    noMemInit,
+    noMetaSync,
+    noSync,
+    mapAsync,
+    unsafeNoLock,
+
   }, context) {
     this.env = new Env()
-    this.env.open({ path, mapSize, noReadAhead, readOnly })
+    this.env.open({
+      path,
+      mapSize,
+      noReadAhead,
+      readOnly,
+      maxDbs,
+      maxReaders,
+      noSubdir,
+      useWritemap,
+      usePreviousSnapshot,
+      noMemInit,
+      noMetaSync,
+      noSync,
+      mapAsync,
+      unsafeNoLock
+    })
     this.dbi = this.env.openDbi({ name, create, keyIsBuffer: true })
 
     if (context) {
