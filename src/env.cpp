@@ -616,15 +616,11 @@ NAN_METHOD(EnvWrap::sync) {
         return Nan::ThrowError("The environment is already closed.");
     }
 
-    Nan::Callback* callback = new Nan::Callback(
-      v8::Local<v8::Function>::Cast(info[0])
-    );
+    int rc = mdb_env_sync(ew->env, 1); // 1 = force
+    if (rc != 0) {
+        return Nan::ThrowError(mdb_strerror(rc));
+    }
 
-    SyncWorker* worker = new SyncWorker(
-      ew->env, callback
-    );
-
-    Nan::AsyncQueueWorker(worker);
     return;
 }
 
