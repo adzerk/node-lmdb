@@ -11,8 +11,8 @@
       "target_name": "node-lmdb",
       "win_delay_load_hook": "false",
       "sources": [
-        "dependencies/lmdb/libraries/liblmdb/mdb.c",
-        "dependencies/lmdb/libraries/liblmdb/midl.c",
+        "libraries/liblmdb/mdb.c",
+        "libraries/liblmdb/midl.c",
         "src/node-lmdb.cpp",
         "src/env.cpp",
         "src/misc.cpp",
@@ -22,7 +22,7 @@
       ],
       "include_dirs": [
         "<!(node -e \"require('nan')\")",
-        "dependencies/lmdb/libraries/liblmdb"
+        "libraries/liblmdb"
       ],
       "conditions": [
         ["OS=='linux'", {

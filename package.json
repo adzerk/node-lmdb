@@ -43,6 +43,7 @@
   },
   "gypfile": true,
   "dependencies": {
+    "msgpackr": "^1.11.0",
     "nan": "^2.19.0",
     "node-gyp-build": "^4.8.1"
   },
