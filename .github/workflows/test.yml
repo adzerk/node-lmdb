@@ -1,33 +1,17 @@
 name: Test
 on: [push]
 jobs:
-  test-macos:
-    runs-on: macos-11
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-11, ubuntu-20.04, windows-2019]
+        node-version: [20, 24]
     steps:
       - uses: actions/checkout@v4
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - run: npm install
-      - run: npm test
-  test-linux:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm install
-      - run: npm test
-  test-windows:
-    runs-on: windows-2019
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm test
