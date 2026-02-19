@@ -9,7 +9,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
       - run: npm install --ignore-scripts
       - run: npm run prebuild
         env:
@@ -30,7 +30,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
       - run: npm install --ignore-scripts
       - run: npm run prebuild-linux-x64
       - run: npm run prebuild-linux-arm64-glibc
@@ -48,7 +48,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
       - run: npm install --ignore-scripts
       - run: npm run prebuild
       - run: tar --create --verbose --file=prebuild-windows.tar -C prebuilds .
