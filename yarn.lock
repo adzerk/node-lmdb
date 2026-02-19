@@ -2486,10 +2486,10 @@ msgpackr@^1.11.0:
   optionalDependencies:
     msgpackr-extract "^3.0.2"
 
-nan@^2.19.0:
-  version "2.19.0"
-  resolved "https://registry.npmjs.org/nan/-/nan-2.19.0.tgz"
-  integrity sha512-nO1xXxfh/RWNxfd/XPfbIfFk5vgLsAxUR9y5O0cHMJu/AW9U95JLXqthYHjEp+8gQ5p96K9jUp8nbVOxCdRbtw==
+nan@^2.25.0:
+  version "2.25.0"
+  resolved "https://registry.npmjs.org/nan/-/nan-2.25.0.tgz"
+  integrity sha512-0M90Ag7Xn5KMLLZ7zliPWP3rT90P6PN+IzVFS0VqmnPktBk3700xUVv8Ikm9EUaUE5SDWdp/BIxdENzVznpm1g==
 
 negotiator@^0.6.3:
   version "0.6.4"
