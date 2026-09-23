@@ -85,11 +85,13 @@
     "brace-expansion": "^1.1.18",
     "cacache": {
       "brace-expansion": "^2.1.4",
-      "minimatch": "^9.0.7"
+      "minimatch": "^9.0.7",
+      "glob": "^10.5.0"
     },
     "node-gyp": {
       "brace-expansion": "^2.1.4",
-      "minimatch": "^9.0.7"
+      "minimatch": "^9.0.7",
+      "glob": "^10.5.0"
     },
     "braces": "^3.0.3",
     "cipher-base": "^1.0.5",
@@ -98,7 +100,6 @@
     "diff": "^4.0.4",
     "form-data": "^2.5.6",
     "get-func-name": "^2.0.2",
-    "glob": "^10.5.0",
     "glob-parent": "^5.1.2",
     "ip-address": "^10.3.1",
     "js-yaml": "^3.15.2",
