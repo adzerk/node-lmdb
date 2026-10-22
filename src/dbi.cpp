@@ -175,7 +175,8 @@ NAN_METHOD(DbiWrap::close) {
 
     DbiWrap *dw = Nan::ObjectWrap::Unwrap<DbiWrap>(info.This());
     if (dw->isOpen) {
-        mdb_dbi_close(dw->env, dw->dbi);
+        // Like the destructor, close only this wrapper. Other wrappers (including
+        // other isolates) may share the same MDB_dbi; the environment closes it.
         dw->isOpen = false;
         dw->ew->Unref();
         dw->ew = nullptr;

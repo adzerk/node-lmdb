@@ -45,14 +45,40 @@ uv_mutex_t* EnvWrap::initMutex() {
 EnvWrap::EnvWrap() {
     this->env = nullptr;
     this->currentWriteTxn = nullptr;
+    this->cleanupRegistered = false;
 }
 
 EnvWrap::~EnvWrap() {
-    // Close if not closed already
-    if (this->env) {
-        this->cleanupStrayTxns();
-        mdb_env_close(env);
+    if (cleanupRegistered) node::RemoveEnvironmentCleanupHook(Isolate::GetCurrent(), cleanupEnvironment, this);
+    cleanupStrayTxns();
+    releaseEnv();
+}
+
+void EnvWrap::cleanupEnvironment(void* data) {
+    EnvWrap* ew = static_cast<EnvWrap*>(data);
+    ew->cleanupRegistered = false;
+    ew->cleanupStrayTxns();
+    ew->releaseEnv();
+    ew->Unref();
+}
+
+void EnvWrap::releaseEnv() {
+    if (!env) return;
+    uv_mutex_lock(envsLock);
+    bool registered = false;
+    for (auto entry = envs.begin(); entry != envs.end(); ++entry) {
+        if (entry->env != env) continue;
+        registered = true;
+        if (--entry->count == 0) {
+            free(entry->path);
+            envs.erase(entry);
+            mdb_env_close(env);
+        }
+        break;
     }
+    if (!registered) mdb_env_close(env); // Created but never opened/registered.
+    env = nullptr;
+    uv_mutex_unlock(envsLock);
 }
 
 void EnvWrap::cleanupStrayTxns() {
@@ -84,6 +110,8 @@ NAN_METHOD(EnvWrap::ctor) {
 
     ew->Wrap(info.This());
     ew->Ref();
+    node::AddEnvironmentCleanupHook(Isolate::GetCurrent(), cleanupEnvironment, ew);
+    ew->cleanupRegistered = true;
 
     return info.GetReturnValue().Set(info.This());
 }
@@ -340,7 +368,7 @@ NAN_METHOD(EnvWrap::open) {
     Local<String> path = Local<String>::Cast(options->Get(Nan::GetCurrentContext(), Nan::New<String>("path").ToLocalChecked()).ToLocalChecked());
     Nan::Utf8String charPath(path);
     uv_mutex_lock(envsLock);
-    for (env_path_t envPath : envs) {
+    for (env_path_t& envPath : envs) {
         char* existingPath = envPath.path;
         if (!strcmp(existingPath, *charPath)) {
             envPath.count++;
@@ -446,29 +474,15 @@ NAN_METHOD(EnvWrap::resize) {
 
 NAN_METHOD(EnvWrap::close) {
     EnvWrap *ew = Nan::ObjectWrap::Unwrap<EnvWrap>(info.This());
-    ew->Unref();
 
     if (!ew->env) {
         return Nan::ThrowError("The environment is already closed.");
     }
     ew->cleanupStrayTxns();
-
-    uv_mutex_lock(envsLock);
-    for (auto envPath = envs.begin(); envPath != envs.end(); ) {
-        if (envPath->env == ew->env) {
-            envPath->count--;
-            if (envPath->count <= 0) {
-                // last thread using it, we can really close it now
-                envs.erase(envPath);
-                mdb_env_close(ew->env);
-            }
-            break;
-        }
-        ++envPath;
-    }
-    uv_mutex_unlock(envsLock);
-
-    ew->env = nullptr;
+    ew->releaseEnv();
+    node::RemoveEnvironmentCleanupHook(Isolate::GetCurrent(), cleanupEnvironment, ew);
+    ew->cleanupRegistered = false;
+    ew->Unref();
 }
 
 NAN_METHOD(EnvWrap::stat) {

@@ -127,6 +127,9 @@ private:
     static uv_mutex_t* initMutex();
     // Cleans up stray transactions
     void cleanupStrayTxns();
+    void releaseEnv();
+    bool cleanupRegistered;
+    static void cleanupEnvironment(void* data);
 
     friend class TxnWrap;
     friend class DbiWrap;
